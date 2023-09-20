@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnetstandard-bip32", "..\dotnetstandard-bip32\dotnetstandard-bip32\dotnetstandard-bip32.csproj", "{18A9BD60-6FD9-459F-AA64-D16CF6CA7D13}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bip32console", "bip32console.csproj", "{65C5BFA8-95E4-4F5F-9CBF-21667183E12D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{18A9BD60-6FD9-459F-AA64-D16CF6CA7D13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A9BD60-6FD9-459F-AA64-D16CF6CA7D13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A9BD60-6FD9-459F-AA64-D16CF6CA7D13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A9BD60-6FD9-459F-AA64-D16CF6CA7D13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65C5BFA8-95E4-4F5F-9CBF-21667183E12D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65C5BFA8-95E4-4F5F-9CBF-21667183E12D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65C5BFA8-95E4-4F5F-9CBF-21667183E12D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65C5BFA8-95E4-4F5F-9CBF-21667183E12D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
