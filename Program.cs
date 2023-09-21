@@ -42,15 +42,26 @@ namespace MyConsoleApp
             string chainCodeHex = BitConverter.ToString(masterKeyFromSeed.ChainCode).Replace("-", "");            
             Console.WriteLine($"Chain Code: {chainCodeHex}");
             Console.WriteLine($"Private Key: {privatekeyHex}");
-            Console.WriteLine($"Public Key: {publicKeyHex}");            
+            Console.WriteLine($"Public Key: {publicKeyHex}");
+
+            // Define the indexes
+            /*uint index44 = 0x8000002c; // Or 2147483692 in decimal
+            uint index9000 = 0x80002328; // Or 2147488816 in decimal
+            uint index0Hardened = 0x80000000; // Or 2147483648 in decimal
+            uint index0 = 0x00000000; // Or 0 in decimal*/
+
+            // Derive the keys
+            //var result1 = bip32.GetChildKeyDerivation(masterKeyFromSeed.Key, masterKeyFromSeed.ChainCode, index44);
 
             // Derive the key using the path "m/44'/9000'/0'/0/0"
-            //var derivedKey = bip32.DerivePath("m/44'/9000'/0'/0/0", seed);
-            //var derivedKey = bip32.DerivePath("m/44/9000/0/0/0", seed);
-            // const string expectedPath = "m/0'/1'/2'/2'";
-            //const string expectedPath = "m/44'/9000'/0'/0'/0'";
             //const string expectedPath = "m/44'";
-            const string expectedPath = "m/44'";
+            //const string expectedPath = "m/44'/9000'";
+            //const string expectedPath = "m/44'/9000'/0'"; // OK
+            //const string expectedPath = "m/44'/9000'/0'/0'";
+            //const string expectedPath = "m/44'/9000'/0'/0'/0'"; //2147483692
+            //const string expectedPath = "m/44'/9000'/0'/0/0";
+            const string expectedPath = "m/44'/9000'/0'/0";
+            
             //var expectedPath = "m/44'";
             Console.WriteLine($"Path: {expectedPath}");
             var derivedKey = bip32.DerivePath(expectedPath, seed);
