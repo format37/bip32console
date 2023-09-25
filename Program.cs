@@ -3,7 +3,119 @@ using dotnetstandard_bip32;
 using System.Security.Cryptography;
 using System.Text;
 using Org.BouncyCastle.Crypto.Digests; // For RIPEMD160
-//using Bech32EncoderLib;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+
+public class Bech32Encoder
+{
+    private const string CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
+    private const int CHECKSUM_LENGTH = 6;
+
+    public static List<int> ConvertBytesTo5BitGroups(byte[] data)
+    {
+        List<int> result = new List<int>();
+        int buffer = 0;
+        int bufferLength = 0;
+
+        foreach (byte b in data)
+        {
+            buffer = (buffer << 8) | b;
+            bufferLength += 8;
+
+            while (bufferLength >= 5)
+            {
+                result.Add((buffer >> (bufferLength - 5)) & 31);
+                bufferLength -= 5;
+            }
+        }
+
+        // Add any remaining bits
+        if (bufferLength > 0)
+        {
+            result.Add((buffer << (5 - bufferLength)) & 31);
+        }
+        // Inside ConvertBytesTo5BitGroups method
+        Console.WriteLine("C# 5-bit groups: " + string.Join(", ", result));
+
+        return result;
+    }
+
+    public static string Encode(string hrp, byte[] data)
+    {
+        List<int> values = ConvertBytesTo5BitGroups(data);
+        int[] checksum = CreateChecksum(hrp, values.ToArray());
+        values.AddRange(checksum);
+
+        // Debugging: Print out the values
+        Console.WriteLine("Values:");
+        foreach (var val in values)
+        {
+            Console.WriteLine(val);
+            if (val < 0 || val >= CHARSET.Length)
+            {
+                Console.WriteLine($"Value out of bounds: {val}");
+                return null;  // or throw an exception
+            }
+        }
+
+        return hrp + "1" + values.Select(x => CHARSET[x]).Aggregate("", (acc, c) => acc + c);
+    }
+
+
+    private static int[] CreateChecksum(string hrp, int[] data)
+    {
+        int[] values = ExpandHrp(hrp).Concat(data).Concat(new int[CHECKSUM_LENGTH]).ToArray();
+        int polyMod = PolyMod(values) ^ 1;
+        int[] checksum = new int[CHECKSUM_LENGTH];
+
+        // Debugging: Print out the PolyMod and values
+        Console.WriteLine($"PolyMod: {polyMod}");
+        Console.WriteLine("Values in CreateChecksum:");
+        foreach (var val in values)
+        {
+            Console.WriteLine(val);
+        }
+
+        for (int i = 0; i < CHECKSUM_LENGTH; ++i)
+        {
+            checksum[i] = (polyMod >> 5 * (5 - i)) & 31;
+        }
+        return checksum;
+    }
+
+    private static int PolyMod(int[] values)
+    {
+        BigInteger chk = 1;
+        int[] generator = {0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
+        foreach (int v in values)
+        {
+            int top = (int)(chk >> 25);
+            Console.WriteLine($"\nC# pre-Intermediate chk: {chk}, top: {top}");
+            chk = (chk & 0x1ffffff) << 5 ^ v;
+            Console.WriteLine($"C# >>>>Intermediate chk: {chk}");          
+            for (int i = 0; i < 5; ++i)
+            {
+                chk ^= ((top >> i) & 1) == 1 ? generator[i] : 0;
+            }
+        }
+        Console.WriteLine("C# PolyMod: " + chk);
+        return (int)chk;
+    }
+
+    private static int[] ExpandHrp(string hrp)
+    {
+        int[] ret = new int[hrp.Length * 2 + 1];
+        for (int i = 0; i < hrp.Length; ++i)
+        {
+            int c = hrp[i];
+            ret[i] = c >> 5;
+            ret[i + hrp.Length + 1] = c & 31;
+        }
+        ret[hrp.Length] = 0;
+        return ret;
+    }
+}
 
 namespace MyConsoleApp
 {
@@ -57,11 +169,11 @@ namespace MyConsoleApp
             byte[] ripemd160Hash = ComputeRipemd160(sha256Hash);
 
             // Bech32 Encoding (assuming you have a Bech32Encoder class)
-            //string b32Encoded = Bech32Encoder.Encode("avax", ripemd160Hash); // TODO: Implement Bech32Encoder
+            string b32Encoded = Bech32Encoder.Encode("avax", ripemd160Hash); // TODO: Implement Bech32Encoder
 
             // Return final address
-            //return "P-" + b32Encoded;
-            return "P-" + BitConverter.ToString(ripemd160Hash).Replace("-", "");
+            return "P-" + b32Encoded;
+            //return "P-" + BitConverter.ToString(ripemd160Hash).Replace("-", "");
         }
 
         public static byte[] HexStringToByteArray(string hex)
@@ -103,7 +215,7 @@ namespace MyConsoleApp
 
             // avax
             string avaxpAddress = ChildToAvaxpAddress(publicKeyHex);
-            Console.WriteLine($"\nAvaxp Address: {avaxpAddress}");
+            Console.WriteLine($"\navaxp: {avaxpAddress}");
         }
     }
 }
