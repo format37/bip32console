@@ -202,7 +202,10 @@ namespace MyConsoleApp
             Console.WriteLine($"Private Key: {privatekeyHex}");
             Console.WriteLine($"Public Key: {publicKeyHex}");
 
+            // Derive a child key
+            Console.WriteLine("\nDerive a child key");
             var derivedKey = bip32.DerivePath(seed);
+            Console.WriteLine($"...");
             publicKey = bip32.GetPublicKey(derivedKey.Key);            
             
             // Convert byte arrays to hex strings for easier viewing
